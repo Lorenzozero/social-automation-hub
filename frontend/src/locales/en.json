@@ -1,0 +1,65 @@
+{
+  "en": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "calendar": "Calendar",
+      "automations": "Automations",
+      "analytics": "Analytics",
+      "inbox": "Inbox",
+      "content_studio": "Content Studio",
+      "accounts": "Accounts",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Overview",
+      "subtitle": "Real-time multi-social KPIs once you connect your accounts.",
+      "reach_24h": "Total reach (24h)",
+      "impressions_7d": "Impressions (7 days)",
+      "followers_delta": "Followers delta",
+      "no_data": "Waiting for real data",
+      "connect_account": "Connect at least one account",
+      "shows_variation": "Shows variation, not estimates"
+    },
+    "calendar": {
+      "title": "Content Calendar",
+      "subtitle": "Schedule and manage posts across all connected platforms."
+    },
+    "automations": {
+      "title": "Automations",
+      "subtitle": "Create safe, consent-based workflows with full audit trails."
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Deep insights from your connected social accounts."
+    },
+    "inbox": {
+      "title": "Inbox",
+      "subtitle": "Manage comments and messages across platforms."
+    },
+    "content_studio": {
+      "title": "Content Studio",
+      "subtitle": "AI-powered multi-variant content creation with approval workflow."
+    },
+    "accounts": {
+      "title": "Connected Accounts",
+      "subtitle": "Manage OAuth tokens and platform integrations."
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Workspace, team, and preferences.",
+      "appearance": "Appearance",
+      "language": "Language",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "common": {
+      "login": "Login",
+      "logout": "Logout",
+      "continue": "Continue",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  }
+}

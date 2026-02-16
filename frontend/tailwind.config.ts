@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: ["class"],
   content: [
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
@@ -8,12 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          primary: "#8b5cf6", // viola morbido
-          secondary: "#fb7185", // corallo
-          background: "#0f172a", // sfondo scuro elegante
-          surface: "#020617",
-        },
+        "brand-primary": "var(--brand-primary)",
+        "brand-secondary": "var(--brand-secondary)",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        card: "hsl(var(--card))",
+        "card-foreground": "hsl(var(--card-foreground))",
+        border: "hsl(var(--border))",
+        muted: "hsl(var(--muted))",
+        "muted-foreground": "hsl(var(--muted-foreground))",
+        surface: "hsl(var(--surface))",
       },
       fontFamily: {
         sans: ["system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],

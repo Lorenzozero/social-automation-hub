@@ -2,13 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --surface: 222.2 47.4% 11.2%;
+    --brand-primary: #8b5cf6;
+    --brand-secondary: #fb7185;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --border: 214.3 31.8% 91.4%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --surface: 210 40% 98%;
+  }
+}
+
+@layer utilities {
+  .card {
+    @apply rounded-2xl border border-border bg-card p-6;
+  }
+  .text-muted {
+    @apply text-muted-foreground;
+  }
+  .bg-surface {
+    @apply bg-[hsl(var(--surface))];
+  }
+  .text-foreground {
+    @apply text-[hsl(var(--foreground))];
+  }
+  .border-border {
+    @apply border-[hsl(var(--border))];
+  }
+  .bg-muted {
+    @apply bg-[hsl(var(--muted))];
+  }
+}
+
 html,
 body {
   height: 100%;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 body {
-  background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 #__next {

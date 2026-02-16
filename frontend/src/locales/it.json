@@ -1,0 +1,65 @@
+{
+  "it": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "calendar": "Calendario",
+      "automations": "Automazioni",
+      "analytics": "Statistiche",
+      "inbox": "Inbox",
+      "content_studio": "Studio Contenuti",
+      "accounts": "Account",
+      "settings": "Impostazioni"
+    },
+    "dashboard": {
+      "title": "Panoramica",
+      "subtitle": "KPI multi-social in tempo reale non appena colleghi i tuoi account.",
+      "reach_24h": "Reach totale (24h)",
+      "impressions_7d": "Impressions (7 giorni)",
+      "followers_delta": "Followers delta",
+      "no_data": "In attesa di dati reali",
+      "connect_account": "Collega almeno un account",
+      "shows_variation": "Mostra la variazione, non stime"
+    },
+    "calendar": {
+      "title": "Calendario Contenuti",
+      "subtitle": "Programma e gestisci i post su tutte le piattaforme collegate."
+    },
+    "automations": {
+      "title": "Automazioni",
+      "subtitle": "Crea workflow sicuri, basati su consenso, con audit trail completo."
+    },
+    "analytics": {
+      "title": "Statistiche",
+      "subtitle": "Insight approfonditi dai tuoi account social collegati."
+    },
+    "inbox": {
+      "title": "Inbox",
+      "subtitle": "Gestisci commenti e messaggi su tutte le piattaforme."
+    },
+    "content_studio": {
+      "title": "Studio Contenuti",
+      "subtitle": "Creazione contenuti multi-variante con AI e workflow di approvazione."
+    },
+    "accounts": {
+      "title": "Account Collegati",
+      "subtitle": "Gestisci token OAuth e integrazioni di piattaforma."
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "subtitle": "Workspace, team e preferenze.",
+      "appearance": "Aspetto",
+      "language": "Lingua",
+      "theme": "Tema",
+      "light": "Chiaro",
+      "dark": "Scuro",
+      "system": "Sistema"
+    },
+    "common": {
+      "login": "Accedi",
+      "logout": "Esci",
+      "continue": "Continua",
+      "save": "Salva",
+      "cancel": "Annulla"
+    }
+  }
+}

@@ -14,6 +14,7 @@
     --surface: 222.2 47.4% 11.2%;
     --brand-primary: #8b5cf6;
     --brand-secondary: #fb7185;
+    --radius: 1rem;
   }
 
   .light {
@@ -26,11 +27,15 @@
     --muted-foreground: 215.4 16.3% 46.9%;
     --surface: 210 40% 98%;
   }
+
+  * {
+    @apply border-border;
+  }
 }
 
 @layer utilities {
   .card {
-    @apply rounded-2xl border border-border bg-card p-6;
+    @apply rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md;
   }
   .text-muted {
     @apply text-muted-foreground;
@@ -47,6 +52,15 @@
   .bg-muted {
     @apply bg-[hsl(var(--muted))];
   }
+  .btn-primary {
+    @apply rounded-xl bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all duration-200 hover:bg-brand-primary/90 hover:shadow-xl hover:shadow-brand-primary/40 hover:scale-[1.02] active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply rounded-xl border-2 border-border bg-surface px-6 py-2.5 text-sm font-semibold text-foreground transition-all duration-200 hover:bg-muted hover:border-muted-foreground/20 hover:scale-[1.02] active:scale-[0.98];
+  }
+  .input-field {
+    @apply rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary;
+  }
 }
 
 html,
@@ -54,12 +68,60 @@ body {
   height: 100%;
   background: hsl(var(--background));
   color: hsl(var(--foreground));
+  scroll-behavior: smooth;
 }
 
 body {
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #__next {
   height: 100%;
 }
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }

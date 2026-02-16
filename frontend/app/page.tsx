@@ -2,31 +2,57 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="h-full flex items-center justify-center">
-      <div className="text-center space-y-6 max-w-xl">
-        <p className="text-sm uppercase tracking-[0.25em] text-brand-secondary/80">
-          Open-source multi-social
-        </p>
-        <h1 className="text-4xl md:text-5xl font-semibold">
-          Pannello unico per i tuoi social.
+    <main className="min-h-screen flex items-center justify-center px-4">
+      <div className="text-center space-y-8 max-w-3xl animate-slide-up">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs font-semibold uppercase tracking-wider animate-fade-in">
+          <span>🚀</span>
+          <span>Open-source multi-social platform</span>
+        </div>
+        
+        <h1 className="text-5xl md:text-7xl font-black bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-primary bg-clip-text text-transparent animate-fade-in stagger-1">
+          Social Automation Hub
         </h1>
-        <p className="text-slate-300">
-          Monitoraggio, publishing e automazioni safe per influencer, creator e agency.
-          Nessun dato finto: solo ciò che arriva davvero dalle tue integrazioni.
+        
+        <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto leading-relaxed animate-fade-in stagger-2">
+          Unified dashboard for influencers, creators, and agencies. Monitor, publish, and automate across
+          Instagram, TikTok, LinkedIn, and X with real data and professional compliance.
         </p>
-        <div className="flex items-center justify-center gap-4">
-          <Link
-            href="/dashboard"
-            className="rounded-full bg-brand.primary px-6 py-3 text-sm font-medium shadow-lg shadow-brand-primary/40 hover:bg-brand.primary/90 transition"
-          >
-            Vai alla dashboard
+        
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in stagger-3">
+          <Link href="/onboarding" className="btn-primary w-full sm:w-auto">
+            Start Guide
           </Link>
-          <Link
-            href="/login"
-            className="rounded-full border border-slate-600 px-6 py-3 text-sm font-medium text-slate-100 hover:bg-slate-900/40 transition"
-          >
-            Accedi
+          <Link href="/dashboard" className="btn-secondary w-full sm:w-auto">
+            Go to Dashboard
           </Link>
+          <a
+            href="https://github.com/Lorenzozero/social-automation-hub"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <span>📦</span>
+            <span>View on GitHub</span>
+          </a>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 animate-fade-in stagger-3">
+          <div className="card text-center">
+            <p className="text-3xl mb-2">📸</p>
+            <p className="text-xs text-muted">Instagram</p>
+          </div>
+          <div className="card text-center">
+            <p className="text-3xl mb-2">🎵</p>
+            <p className="text-xs text-muted">TikTok</p>
+          </div>
+          <div className="card text-center">
+            <p className="text-3xl mb-2">💼</p>
+            <p className="text-xs text-muted">LinkedIn</p>
+          </div>
+          <div className="card text-center">
+            <p className="text-3xl mb-2">𝕏</p>
+            <p className="text-xs text-muted">X (Twitter)</p>
+          </div>
         </div>
       </div>
     </main>

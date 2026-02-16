@@ -33,6 +33,22 @@ class SocialAccount(models.Model):
     platform_user_id = models.CharField(max_length=255)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_NEEDS_REVIEW)
 
+    # Feature flags / safety rails
+    identity_unfollowers_enabled = models.BooleanField(
+        default=False,
+        help_text="Enable identity-level unfollower detection where officially supported (e.g., X followers list API).",
+    )
+    identity_unfollowers_max_pages = models.IntegerField(
+        default=50,
+        help_text="Safety cap for followers pagination (prevents runaway sync on huge accounts).",
+    )
+    identity_unfollowers_page_size = models.IntegerField(
+        default=1000,
+        help_text="Page size for followers list API (platform dependent).",
+    )
+    identity_unfollowers_last_run_at = models.DateTimeField(null=True, blank=True)
+    identity_unfollowers_last_error = models.TextField(blank=True, default="")
+
     class Meta:
         db_table = "social_accounts"
         unique_together = ("workspace", "platform", "handle")
@@ -58,18 +74,18 @@ class MetricsSnapshot(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     social_account = models.ForeignKey(SocialAccount, on_delete=models.CASCADE, related_name="metrics_snapshots")
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
-    
+
     # Core metrics
     followers_count = models.IntegerField(default=0)
     following_count = models.IntegerField(default=0)
     posts_count = models.IntegerField(default=0)
-    
+
     # Engagement metrics (last 24h unless specified)
     reach = models.IntegerField(default=0, help_text="Unique accounts reached")
     impressions = models.IntegerField(default=0, help_text="Total views")
     engagement_count = models.IntegerField(default=0, help_text="Likes + comments + shares")
     profile_views = models.IntegerField(default=0)
-    
+
     # Platform-specific
     extra_data = models.JSONField(default=dict, blank=True, help_text="Platform-specific metrics")
 
@@ -101,7 +117,7 @@ class FollowerChange(models.Model):
     user_id = models.CharField(max_length=255, help_text="Platform user ID")
     username = models.CharField(max_length=255, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
-    
+
     # Enrichment data
     profile_pic_url = models.URLField(blank=True, null=True)
     verified = models.BooleanField(default=False)
@@ -125,7 +141,7 @@ class TopContent(models.Model):
     post_url = models.URLField()
     caption = models.TextField(blank=True)
     media_type = models.CharField(max_length=32, blank=True, help_text="photo, video, carousel, reel")
-    
+
     # Performance metrics
     likes_count = models.IntegerField(default=0)
     comments_count = models.IntegerField(default=0)
@@ -133,7 +149,7 @@ class TopContent(models.Model):
     saves_count = models.IntegerField(default=0)
     reach = models.IntegerField(default=0)
     engagement_rate = models.FloatField(default=0.0, help_text="Percentage")
-    
+
     posted_at = models.DateTimeField()
     last_updated = models.DateTimeField(auto_now=True)
 
@@ -148,13 +164,13 @@ class AudienceInsight(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     social_account = models.ForeignKey(SocialAccount, on_delete=models.CASCADE, related_name="audience_insights")
     snapshot_date = models.DateField(db_index=True)
-    
+
     # Demographics (JSON arrays with {value, count} objects)
     age_ranges = models.JSONField(default=list, help_text='[{"range": "18-24", "count": 1234}, ...]')
     genders = models.JSONField(default=list, help_text='[{"gender": "male", "count": 5000}, ...]')
     countries = models.JSONField(default=list, help_text='[{"country": "US", "count": 3000}, ...]')
     cities = models.JSONField(default=list, help_text='[{"city": "New York", "count": 800}, ...]')
-    
+
     # Activity patterns
     active_hours = models.JSONField(default=list, help_text='[{"hour": 14, "activity": 0.85}, ...]')
     active_days = models.JSONField(default=list, help_text='[{"day": "monday", "activity": 0.92}, ...]')

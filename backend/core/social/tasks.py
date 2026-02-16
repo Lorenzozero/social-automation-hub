@@ -3,6 +3,8 @@ from django.utils import timezone
 from datetime import timedelta
 import logging
 
+from django.core.cache import cache
+
 from core.social.models import (
     SocialAccount, MetricsSnapshot, FollowerChange, TopContent, AudienceInsight
 )
@@ -158,35 +160,61 @@ def detect_follower_changes(account_id):
         logger.error(f"Failed to detect follower changes for {account_id}: {e}")
 
 
+def _x_identity_lock_key(account_id: str) -> str:
+    return f"lock:x_followers_identity_sync:{account_id}"
+
+
 @shared_task
 def sync_all_x_followers_identities():
-    """Sync identity-level followers for all active X accounts (official API)."""
+    """Sync identity-level followers for all active X accounts (official API).
+
+    Runs only for accounts with identity_unfollowers_enabled=True.
+    Uses deterministic staggering to avoid bursting API calls.
+    """
     accounts = SocialAccount.objects.filter(
         status=SocialAccount.STATUS_ACTIVE,
         platform=SocialAccount.PLATFORM_X,
+        identity_unfollowers_enabled=True,
     )
+
     for account in accounts:
         try:
-            sync_x_followers_identities.delay(str(account.id))
+            # Deterministic staggering: spread calls in a 0..300s window.
+            delay = int(str(account.id).replace("-", ""), 16) % 300
+            sync_x_followers_identities.apply_async(args=[str(account.id)], countdown=delay)
         except Exception as e:
             logger.error(f"Failed to queue X followers identity sync for {account}: {e}")
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
-def sync_x_followers_identities(self, account_id: str, max_pages: int = 50, page_size: int = 1000):
+def sync_x_followers_identities(self, account_id: str):
     """Run X followers snapshot+diff for a single account.
 
-    Retries are used for transient errors (e.g., rate limits).
+    - Guarded by a cache lock to prevent overlap.
+    - Uses per-account caps configured on SocialAccount.
+    - Retries are used for transient errors (e.g., rate limits).
     """
+    lock_key = _x_identity_lock_key(account_id)
+
+    # Best-effort distributed lock (expires automatically)
+    acquired = cache.add(lock_key, "1", timeout=55 * 60)
+    if not acquired:
+        return {"skipped": True, "reason": "lock_exists"}
+
     try:
         account = SocialAccount.objects.get(id=account_id)
-        if account.platform != SocialAccount.PLATFORM_X:
-            return {"skipped": True, "reason": "not_x"}
+        if account.platform != SocialAccount.PLATFORM_X or not account.identity_unfollowers_enabled:
+            return {"skipped": True, "reason": "not_enabled"}
 
         result = sync_x_followers_snapshot(
             social_account_id=str(account.id),
-            max_pages=max_pages,
-            page_size=page_size,
+            max_pages=max(1, int(account.identity_unfollowers_max_pages or 50)),
+            page_size=max(1, int(account.identity_unfollowers_page_size or 1000)),
+        )
+
+        SocialAccount.objects.filter(id=account.id).update(
+            identity_unfollowers_last_run_at=timezone.now(),
+            identity_unfollowers_last_error="",
         )
 
         logger.info(
@@ -209,17 +237,25 @@ def sync_x_followers_identities(self, account_id: str, max_pages: int = 50, page
         }
 
     except XApiError as exc:
-        # Backoff on X rate limits.
         msg = str(exc)
+        SocialAccount.objects.filter(id=account_id).update(identity_unfollowers_last_error=msg)
+
+        # Backoff on X rate limits.
         if "429" in msg or "rate limit" in msg.lower():
             raise self.retry(exc=exc, countdown=60 * 15)
         raise
+
     except SocialAccount.DoesNotExist:
         logger.warning(f"X follower identity sync skipped (missing account): {account_id}")
         return {"skipped": True, "reason": "missing_account"}
+
     except Exception as exc:
+        SocialAccount.objects.filter(id=account_id).update(identity_unfollowers_last_error=str(exc))
         logger.error(f"X follower identity sync failed for {account_id}: {exc}")
         raise self.retry(exc=exc)
+
+    finally:
+        cache.delete(lock_key)
 
 
 @shared_task
@@ -292,7 +328,7 @@ def update_top_content(account_id):
                     social_account=account,
                     platform_post_id=tweet["id"],
                     defaults={
-                        "post_url": f"https://twitter.com/i/web/status/{tweet['id']}",
+                        "post_url": f"https://twitter.com/i/web/status/{tweet['id']}" ,
                         "caption": tweet["text"],
                         "media_type": "tweet",
                         "likes_count": metrics.get("like_count", 0),

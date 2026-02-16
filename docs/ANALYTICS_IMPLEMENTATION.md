@@ -28,6 +28,14 @@ Code:
 - Schedule: hourly (Celery Beat) at minute :05
 - Run manually: `python manage.py sync_x_followers --account <SOCIAL_ACCOUNT_UUID>`
 
+Feature flag:
+- `SocialAccount.identity_unfollowers_enabled` must be set to `true`.
+- Optional safety caps: `identity_unfollowers_max_pages`, `identity_unfollowers_page_size`.
+
+Notes:
+- A cache lock prevents overlapping sync for the same account.
+- Accounts are staggered within the hour (0..300s) to avoid bursting API calls.
+
 ### Instagram / LinkedIn / TikTok (delta only)
 
 No identity-level unfollowers are produced.

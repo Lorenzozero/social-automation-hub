@@ -24,6 +24,8 @@ For platforms where follower lists are not available via official APIs, the app 
 Code:
 - `backend/core/social/x_api.py`
 - `backend/core/social/follower_sync.py`
+- Celery task: `core.social.tasks.sync_all_x_followers_identities`
+- Schedule: hourly (Celery Beat) at minute :05
 - Run manually: `python manage.py sync_x_followers --account <SOCIAL_ACCOUNT_UUID>`
 
 ### Instagram / LinkedIn / TikTok (delta only)
@@ -33,11 +35,3 @@ Instead, implement:
 - periodic `MetricsSnapshot.followers_count`
 - show `delta followers` for selected time range
 - show correlations with scheduled/published posts
-
-## Next steps (to automate the command)
-
-To run unfollower sync automatically:
-- integrate `sync_x_followers_snapshot(...)` into a Celery task inside `backend/core/social/tasks.py`
-- add a Celery Beat schedule to run it (e.g., every 30 minutes)
-
-This is intentionally left as a separate follow-up change to avoid overwriting existing task modules.

@@ -11,6 +11,10 @@ from core.social.api_clients import (
     InstagramAPIClient, TikTokAPIClient, LinkedInAPIClient, XAPIClient
 )
 
+# Identity-level unfollowers (official APIs only)
+from core.social.follower_sync import sync_x_followers_snapshot
+from core.social.x_api import XApiError
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +35,7 @@ def sync_account_metrics(account_id):
     try:
         account = SocialAccount.objects.get(id=account_id)
         token = decrypt_token(account.oauth_token.access_token_enc)
-        
+
         # Fetch metrics based on platform
         if account.platform == SocialAccount.PLATFORM_INSTAGRAM:
             client = InstagramAPIClient(token)
@@ -41,7 +45,7 @@ def sync_account_metrics(account_id):
                 metrics=["reach", "impressions", "profile_views"],
                 period="day"
             )
-            
+
             metrics = {
                 "followers": account_info.get("followers_count", 0),
                 "following": account_info.get("follows_count", 0),
@@ -51,11 +55,11 @@ def sync_account_metrics(account_id):
                 "profile_views": insights.get("profile_views", 0),
                 "engagement": 0,  # Calculated from posts
             }
-            
+
         elif account.platform == SocialAccount.PLATFORM_TIKTOK:
             client = TikTokAPIClient(token)
             user_info = client.get_user_info()
-            
+
             metrics = {
                 "followers": user_info.get("follower_count", 0),
                 "following": user_info.get("following_count", 0),
@@ -65,7 +69,7 @@ def sync_account_metrics(account_id):
                 "profile_views": 0,
                 "engagement": 0,
             }
-            
+
         elif account.platform == SocialAccount.PLATFORM_LINKEDIN:
             # LinkedIn API is more restricted, basic profile only
             metrics = {
@@ -77,12 +81,12 @@ def sync_account_metrics(account_id):
                 "profile_views": 0,
                 "engagement": 0,
             }
-            
+
         elif account.platform == SocialAccount.PLATFORM_X:
             client = XAPIClient(token)
             user_info = client.get_me()
             public_metrics = user_info.get("public_metrics", {})
-            
+
             metrics = {
                 "followers": public_metrics.get("followers_count", 0),
                 "following": public_metrics.get("following_count", 0),
@@ -95,7 +99,7 @@ def sync_account_metrics(account_id):
         else:
             logger.warning(f"Unknown platform: {account.platform}")
             return
-        
+
         # Save snapshot
         MetricsSnapshot.objects.create(
             social_account=account,
@@ -107,9 +111,9 @@ def sync_account_metrics(account_id):
             engagement_count=metrics["engagement"],
             profile_views=metrics["profile_views"],
         )
-        
+
         logger.info(f"Synced metrics for {account}")
-        
+
     except Exception as e:
         logger.error(f"Failed to sync metrics for account {account_id}: {e}")
         raise
@@ -117,7 +121,7 @@ def sync_account_metrics(account_id):
 
 @shared_task
 def detect_all_follower_changes():
-    """Detect follower changes for all active accounts."""
+    """Detect follower changes for all active accounts (aggregate delta only)."""
     accounts = SocialAccount.objects.filter(status=SocialAccount.STATUS_ACTIVE)
     for account in accounts:
         try:
@@ -128,35 +132,94 @@ def detect_all_follower_changes():
 
 @shared_task
 def detect_follower_changes(account_id):
-    """Compare current followers with previous snapshot."""
+    """Compare current followers with previous snapshot (count delta)."""
     try:
         account = SocialAccount.objects.get(id=account_id)
-        
+
         # Get current and previous follower counts
         snapshots = MetricsSnapshot.objects.filter(
             social_account=account
         ).order_by("-timestamp")[:2]
-        
+
         if len(snapshots) < 2:
             logger.info(f"Not enough snapshots for {account}")
             return
-        
+
         current = snapshots[0].followers_count
         previous = snapshots[1].followers_count
         delta = current - previous
-        
+
         if delta > 0:
-            # New followers detected
             logger.info(f"{account} gained {delta} followers")
-            # Note: Actual follower list tracking requires webhooks or polling follower IDs
-            # This is a simplified version that tracks aggregate changes
-            
         elif delta < 0:
-            # Unfollowers detected
             logger.info(f"{account} lost {abs(delta)} followers")
-        
+
     except Exception as e:
         logger.error(f"Failed to detect follower changes for {account_id}: {e}")
+
+
+@shared_task
+def sync_all_x_followers_identities():
+    """Sync identity-level followers for all active X accounts (official API)."""
+    accounts = SocialAccount.objects.filter(
+        status=SocialAccount.STATUS_ACTIVE,
+        platform=SocialAccount.PLATFORM_X,
+    )
+    for account in accounts:
+        try:
+            sync_x_followers_identities.delay(str(account.id))
+        except Exception as e:
+            logger.error(f"Failed to queue X followers identity sync for {account}: {e}")
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def sync_x_followers_identities(self, account_id: str, max_pages: int = 50, page_size: int = 1000):
+    """Run X followers snapshot+diff for a single account.
+
+    Retries are used for transient errors (e.g., rate limits).
+    """
+    try:
+        account = SocialAccount.objects.get(id=account_id)
+        if account.platform != SocialAccount.PLATFORM_X:
+            return {"skipped": True, "reason": "not_x"}
+
+        result = sync_x_followers_snapshot(
+            social_account_id=str(account.id),
+            max_pages=max_pages,
+            page_size=page_size,
+        )
+
+        logger.info(
+            "X follower identity sync ok",
+            extra={
+                "social_account_id": str(account.id),
+                "platform": "x",
+                "fetched_users": result.fetched_users,
+                "new_followers": result.new_followers,
+                "unfollowers": result.unfollowers,
+            },
+        )
+
+        return {
+            "platform": result.platform,
+            "account_id": result.account_id,
+            "fetched_users": result.fetched_users,
+            "new_followers": result.new_followers,
+            "unfollowers": result.unfollowers,
+        }
+
+    except XApiError as exc:
+        # Backoff on X rate limits.
+        msg = str(exc)
+        if "429" in msg or "rate limit" in msg.lower():
+            raise self.retry(exc=exc, countdown=60 * 15)
+        raise
+    except SocialAccount.DoesNotExist:
+        logger.warning(f"X follower identity sync skipped (missing account): {account_id}")
+        return {"skipped": True, "reason": "missing_account"}
+    except Exception as exc:
+        logger.error(f"X follower identity sync failed for {account_id}: {exc}")
+        raise self.retry(exc=exc)
 
 
 @shared_task
@@ -176,22 +239,22 @@ def update_top_content(account_id):
     try:
         account = SocialAccount.objects.get(id=account_id)
         token = decrypt_token(account.oauth_token.access_token_enc)
-        
+
         if account.platform == SocialAccount.PLATFORM_INSTAGRAM:
             client = InstagramAPIClient(token)
             media_list = client.get_media(account.platform_user_id, limit=50)
-            
+
             for media in media_list:
                 media_id = media["id"]
                 insights = client.get_media_insights(media_id)
-                
+
                 engagement = (
-                    media.get("like_count", 0) + 
+                    media.get("like_count", 0) +
                     media.get("comments_count", 0)
                 )
                 reach = insights.get("reach", 1)
                 engagement_rate = (engagement / reach * 100) if reach > 0 else 0
-                
+
                 TopContent.objects.update_or_create(
                     social_account=account,
                     platform_post_id=media_id,
@@ -208,11 +271,11 @@ def update_top_content(account_id):
                         "posted_at": media["timestamp"],
                     },
                 )
-        
+
         elif account.platform == SocialAccount.PLATFORM_X:
             client = XAPIClient(token)
             tweets = client.get_user_tweets(account.platform_user_id, max_results=50)
-            
+
             for tweet in tweets:
                 metrics = tweet.get("public_metrics", {})
                 engagement = (
@@ -220,11 +283,11 @@ def update_top_content(account_id):
                     metrics.get("retweet_count", 0) +
                     metrics.get("reply_count", 0)
                 )
-                
+
                 # X doesn't provide reach in basic API, use impressions as proxy
                 impressions = metrics.get("impression_count", 1)
                 engagement_rate = (engagement / impressions * 100) if impressions > 0 else 0
-                
+
                 TopContent.objects.update_or_create(
                     social_account=account,
                     platform_post_id=tweet["id"],
@@ -241,9 +304,9 @@ def update_top_content(account_id):
                         "posted_at": tweet["created_at"],
                     },
                 )
-        
+
         logger.info(f"Updated top content for {account}")
-        
+
     except Exception as e:
         logger.error(f"Failed to update top content for {account_id}: {e}")
 
@@ -265,11 +328,11 @@ def fetch_audience_insights(account_id):
     try:
         account = SocialAccount.objects.get(id=account_id)
         token = decrypt_token(account.oauth_token.access_token_enc)
-        
+
         if account.platform == SocialAccount.PLATFORM_INSTAGRAM:
             client = InstagramAPIClient(token)
             audience_data = client.get_audience_insights(account.platform_user_id)
-            
+
             AudienceInsight.objects.update_or_create(
                 social_account=account,
                 snapshot_date=timezone.now().date(),
@@ -282,8 +345,8 @@ def fetch_audience_insights(account_id):
                     "active_days": [],
                 },
             )
-        
+
         logger.info(f"Fetched audience insights for {account}")
-        
+
     except Exception as e:
         logger.error(f"Failed to fetch audience insights for {account_id}: {e}")

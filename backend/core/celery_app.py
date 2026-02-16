@@ -18,6 +18,11 @@ app.conf.beat_schedule = {
         'task': 'core.social.tasks.detect_all_follower_changes',
         'schedule': crontab(minute='*/30'),
     },
+    # Identity-level unfollowers (official API only) for X
+    'sync-x-followers-identities-hourly': {
+        'task': 'core.social.tasks.sync_all_x_followers_identities',
+        'schedule': crontab(minute=5),  # every hour at :05
+    },
     'update-top-content-daily': {
         'task': 'core.social.tasks.update_all_top_content',
         'schedule': crontab(hour=2, minute=0),

@@ -5,6 +5,7 @@ import { useTranslations } from "@/lib/i18n";
 import { EmptyState } from "@/components/common/empty-state";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { BarChart3 } from "lucide-react";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 const WORKSPACE_ID = "00000000-0000-0000-0000-000000000001";
@@ -95,41 +96,32 @@ export default function DashboardPage() {
         </div>
       ) : !metrics || metrics.accounts.length === 0 ? (
         <EmptyState
-          icon="📊"
+          icon={BarChart3}
           title="No data yet"
           description="Connect your first social account to start seeing metrics."
-          action={
-            <Link href="/accounts" className="btn-primary mt-4">
-              Connect Account
-            </Link>
-          }
         />
       ) : (
         <>
           <section className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-fade-in stagger-1">
             <StatCard
-              label="Total Followers"
+              title="Total Followers"
               value={formatNumber(metrics.totals.followers)}
-              hint={`${metrics.accounts.length} account${metrics.accounts.length !== 1 ? "s" : ""}`}
-              trend="neutral"
+              change={`${metrics.accounts.length} accounts`}
             />
             <StatCard
-              label={`Reach (${timeframe})`}
+              title={`Reach (${timeframe})`}
               value={formatNumber(metrics.totals.reach)}
-              hint="Unique accounts reached"
-              trend="up"
+              change="Unique accounts reached"
             />
             <StatCard
-              label={`Impressions (${timeframe})`}
+              title={`Impressions (${timeframe})`}
               value={formatNumber(metrics.totals.impressions)}
-              hint="Total views"
-              trend="up"
+              change="Total views"
             />
             <StatCard
-              label={`Engagement (${timeframe})`}
+              title={`Engagement (${timeframe})`}
               value={formatNumber(metrics.totals.engagement)}
-              hint="Likes + comments + shares"
-              trend="up"
+              change="Likes + comments + shares"
             />
           </section>
 

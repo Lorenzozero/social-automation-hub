@@ -1,26 +1,38 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-type Theme = "light" | "dark" | "system";
-type Locale = "en" | "it";
+export type Theme = 'light' | 'dark' | 'system';
+export type Language = 'en' | 'it' | 'es' | 'fr' | 'de';
 
-type PreferencesStore = {
+interface PreferencesState {
   theme: Theme;
-  locale: Locale;
   setTheme: (theme: Theme) => void;
-  setLocale: (locale: Locale) => void;
-};
+  language: Language;
+  setLanguage: (language: Language) => void;
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (enabled: boolean) => void;
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  refreshInterval: number;
+  setRefreshInterval: (interval: number) => void;
+}
 
-export const usePreferences = create<PreferencesStore>()(
-  persist(
-    (set) => ({
-      theme: "dark",
-      locale: "it",
-      setTheme: (theme) => set({ theme }),
-      setLocale: (locale) => set({ locale }),
-    }),
-    {
-      name: "preferences-storage",
-    }
-  )
-);
+export const usePreferences = create<PreferencesState>()(persist(
+  (set) => ({
+    theme: 'system',
+    setTheme: (theme) => set({ theme }),
+    language: 'en',
+    setLanguage: (language) => set({ language }),
+    notificationsEnabled: true,
+    setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
+    sidebarCollapsed: false,
+    toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+    setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+    refreshInterval: 300,
+    setRefreshInterval: (interval) => set({ refreshInterval: interval }),
+  }),
+  {
+    name: 'user-preferences',
+  }
+));

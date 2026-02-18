@@ -1,11 +1,10 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 

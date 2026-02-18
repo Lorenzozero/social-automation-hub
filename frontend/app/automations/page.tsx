@@ -104,8 +104,8 @@ export default function AutomationsPage() {
             <h3 className="text-sm font-semibold text-foreground mb-1">Compliance Note</h3>
             <p className="text-xs text-foreground-secondary">
               Per X (Twitter): tutte le automazioni richiedono{" "}
-              <strong>consenso esplicito</strong> dell'utente con opzione opt-out immediata.
-              Automazioni "silent" violano le policy e possono causare ban.
+              <strong>consenso esplicito</strong> dell&apos;utente con opzione opt-out immediata.
+              Automazioni &quot;silent&quot; violano le policy e possono causare ban.
             </p>
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function AutomationsPage() {
               Auto-Repost Best Performers
             </h4>
             <p className="text-xs text-muted">
-              Ripubblica automaticamente contenuti con engagement_rate > 10%
+              Ripubblica automaticamente contenuti con engagement rate superiore al 10%
             </p>
           </button>
           <button className="p-4 rounded-xl bg-background hover:bg-surface transition-colors text-left border border-muted">

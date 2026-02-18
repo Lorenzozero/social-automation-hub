@@ -1,65 +1,57 @@
 {
-  "it": {
-    "nav": {
-      "dashboard": "Dashboard",
-      "calendar": "Calendario",
-      "automations": "Automazioni",
-      "analytics": "Statistiche",
-      "inbox": "Inbox",
-      "content_studio": "Studio Contenuti",
-      "accounts": "Account",
-      "settings": "Impostazioni"
-    },
-    "dashboard": {
-      "title": "Panoramica",
-      "subtitle": "KPI multi-social in tempo reale non appena colleghi i tuoi account.",
-      "reach_24h": "Reach totale (24h)",
-      "impressions_7d": "Impressions (7 giorni)",
-      "followers_delta": "Followers delta",
-      "no_data": "In attesa di dati reali",
-      "connect_account": "Collega almeno un account",
-      "shows_variation": "Mostra la variazione, non stime"
-    },
-    "calendar": {
-      "title": "Calendario Contenuti",
-      "subtitle": "Programma e gestisci i post su tutte le piattaforme collegate."
-    },
-    "automations": {
-      "title": "Automazioni",
-      "subtitle": "Crea workflow sicuri, basati su consenso, con audit trail completo."
-    },
-    "analytics": {
-      "title": "Statistiche",
-      "subtitle": "Insight approfonditi dai tuoi account social collegati."
-    },
-    "inbox": {
-      "title": "Inbox",
-      "subtitle": "Gestisci commenti e messaggi su tutte le piattaforme."
-    },
-    "content_studio": {
-      "title": "Studio Contenuti",
-      "subtitle": "Creazione contenuti multi-variante con AI e workflow di approvazione."
-    },
-    "accounts": {
-      "title": "Account Collegati",
-      "subtitle": "Gestisci token OAuth e integrazioni di piattaforma."
-    },
-    "settings": {
-      "title": "Impostazioni",
-      "subtitle": "Workspace, team e preferenze.",
-      "appearance": "Aspetto",
-      "language": "Lingua",
-      "theme": "Tema",
-      "light": "Chiaro",
-      "dark": "Scuro",
-      "system": "Sistema"
-    },
-    "common": {
-      "login": "Accedi",
-      "logout": "Esci",
-      "continue": "Continua",
-      "save": "Salva",
-      "cancel": "Annulla"
-    }
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "calendar": "Calendario",
+    "content_studio": "Studio Contenuti",
+    "analytics": "Analytics",
+    "inbox": "Inbox",
+    "automations": "Automazioni",
+    "accounts": "Account",
+    "settings": "Impostazioni"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Panoramica delle tue metriche social"
+  },
+  "accounts": {
+    "title": "Gestisci Account",
+    "subtitle": "Collega e gestisci i tuoi profili social"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Analisi dettagliate delle performance"
+  },
+  "content_studio": {
+    "title": "Studio Contenuti",
+    "subtitle": "Crea e programma i tuoi post"
+  },
+  "calendar": {
+    "title": "Calendario Editoriale",
+    "subtitle": "Pianifica la tua strategia di contenuti"
+  },
+  "inbox": {
+    "title": "Inbox Unificata",
+    "subtitle": "Gestisci messaggi e commenti da un unico posto"
+  },
+  "automations": {
+    "title": "Automazioni",
+    "subtitle": "Workflow intelligenti per risparmiare tempo"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Configura la tua esperienza"
+  },
+  "onboarding": {
+    "title": "Benvenuto",
+    "subtitle": "Configuriamo il tuo workspace"
   }
 }

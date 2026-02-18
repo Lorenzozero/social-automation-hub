@@ -1,11 +1,10 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useTranslations } from "@/lib/i18n";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-
-// Force dynamic rendering since we use useSearchParams
-export const dynamic = 'force-dynamic';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 const WORKSPACE_ID = "00000000-0000-0000-0000-000000000001";

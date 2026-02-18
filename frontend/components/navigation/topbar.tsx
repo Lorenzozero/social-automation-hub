@@ -3,7 +3,7 @@
 import { Bell, Search } from "lucide-react";
 import { usePreferences } from "@/store/preferences";
 
-export default function Topbar() {
+export function Topbar() {
   const { theme, setTheme } = usePreferences();
 
   return (
@@ -33,3 +33,5 @@ export default function Topbar() {
     </header>
   );
 }
+
+export default Topbar;

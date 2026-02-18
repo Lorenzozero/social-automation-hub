@@ -15,7 +15,7 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export default function Sidebar() {
+export function Sidebar() {
   const pathname = usePathname();
 
   return (
@@ -48,3 +48,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+export default Sidebar;

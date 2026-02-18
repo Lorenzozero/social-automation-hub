@@ -10,7 +10,7 @@ interface StatCardProps {
   icon?: LucideIcon;
 }
 
-export default function StatCard({ title, value, change, changeType = 'neutral', icon: Icon }: StatCardProps) {
+export function StatCard({ title, value, change, changeType = 'neutral', icon: Icon }: StatCardProps) {
   return (
     <div className="card">
       <div className="flex items-start justify-between">
@@ -40,3 +40,5 @@ export default function StatCard({ title, value, change, changeType = 'neutral',
     </div>
   );
 }
+
+export default StatCard;

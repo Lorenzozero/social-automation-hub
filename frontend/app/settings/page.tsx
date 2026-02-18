@@ -1,11 +1,11 @@
 "use client";
 
 import { useTranslations } from "@/lib/i18n";
-import { usePreferences } from "@/store/preferences";
+
+export const dynamic = 'force-dynamic';
 
 export default function SettingsPage() {
   const t = useTranslations();
-  const { theme, language, setTheme, setLanguage } = usePreferences();
 
   return (
     <div className="space-y-6">
@@ -14,49 +14,10 @@ export default function SettingsPage() {
         <p className="text-sm text-muted">{t("settings.subtitle")}</p>
       </section>
 
-      <section className="card space-y-6">
-        <div>
-          <h2 className="text-lg font-medium mb-3">{t("settings.appearance")}</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">{t("settings.theme")}</label>
-              <div className="flex gap-2">
-                {["light", "dark", "system"].map((th) => (
-                  <button
-                    key={th}
-                    onClick={() => setTheme(th as any)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                      theme === th
-                        ? "bg-brand-primary text-white"
-                        : "bg-surface border border-border text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    {t(`settings.${th}` as any)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">{t("settings.language")}</label>
-              <div className="flex gap-2">
-                {["en", "it"].map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => setLanguage(lang as any)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                      language === lang
-                        ? "bg-brand-primary text-white"
-                        : "bg-surface border border-border text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    {lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+      <section className="card min-h-[400px] flex items-center justify-center">
+        <p className="text-sm text-muted max-w-md text-center">
+          Workspace settings, team management, API keys, and notification preferences.
+        </p>
       </section>
     </div>
   );

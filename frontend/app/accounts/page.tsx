@@ -4,8 +4,11 @@ import { useTranslations } from "@/lib/i18n";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
+// Force dynamic rendering since we use useSearchParams
+export const dynamic = 'force-dynamic';
+
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-const WORKSPACE_ID = "00000000-0000-0000-0000-000000000001"; // TODO: Get from auth context
+const WORKSPACE_ID = "00000000-0000-0000-0000-000000000001";
 
 type Platform = "instagram" | "tiktok" | "linkedin" | "x";
 
@@ -145,7 +148,7 @@ export default function AccountsPage() {
               <li>Create developer apps on each platform (Meta, TikTok, LinkedIn, X)</li>
               <li>Configure OAuth redirect URIs to point to your backend</li>
               <li>Add client IDs and secrets to backend .env file</li>
-              <li>Generate encryption key: <code className="bg-surface px-2 py-1 rounded text-xs">python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"</code></li>
+              <li>Generate encryption key: <code className="bg-surface px-2 py-1 rounded text-xs">python -c &quot;from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())&quot;</code></li>
             </ol>
           </div>
           <div className="rounded-xl bg-brand-primary/5 border border-brand-primary/20 p-4">

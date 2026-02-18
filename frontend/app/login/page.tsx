@@ -1,3 +1,7 @@
+"use client";
+
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   return (
     <main className="h-full flex items-center justify-center px-4">
@@ -12,7 +16,7 @@ export default function LoginPage() {
             in base all&apos;ambiente. Qui non ci sono credenziali hardcodate.
           </p>
         </div>
-        <button className="w-full rounded-full bg-brand.primary px-4 py-2.5 text-sm font-medium shadow-lg shadow-brand-primary/40 hover:bg-brand.primary/90 transition">
+        <button className="w-full rounded-full bg-brand-primary px-4 py-2.5 text-sm font-medium shadow-lg shadow-brand-primary/40 hover:bg-brand-primary/90 transition">
           Continua con provider
         </button>
       </div>

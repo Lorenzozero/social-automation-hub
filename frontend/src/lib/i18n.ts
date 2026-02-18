@@ -4,11 +4,16 @@ import { usePreferences } from "@/store/preferences";
 import enLocale from "@/locales/en.json";
 import itLocale from "@/locales/it.json";
 
-const locales = { en: enLocale.en, it: itLocale.it };
+type Locale = 'en' | 'it';
+
+const locales: Record<Locale, any> = {
+  en: enLocale,
+  it: itLocale,
+};
 
 export function useTranslations() {
-  const locale = usePreferences((s) => s.locale);
-  const messages = locales[locale];
+  const language = usePreferences((s) => s.language);
+  const messages = locales[language as Locale] || locales.en;
 
   return (key: string) => {
     const keys = key.split(".");
@@ -18,4 +23,8 @@ export function useTranslations() {
     }
     return value || key;
   };
+}
+
+export function getTranslations(locale: Locale = 'en') {
+  return locales[locale] || locales.en;
 }

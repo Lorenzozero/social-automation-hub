@@ -1,9 +1,7 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
-
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -18,7 +16,7 @@ interface FollowerChange {
   timestamp: string;
 }
 
-export default function FollowersPage() {
+function FollowersContent() {
   const searchParams = useSearchParams();
   const type = searchParams?.get("type") || "new";
   const accountId = searchParams?.get("account");
@@ -148,5 +146,13 @@ export default function FollowersPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function FollowersPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><p className="text-muted">Loading...</p></div>}>
+      <FollowersContent />
+    </Suspense>
   );
 }

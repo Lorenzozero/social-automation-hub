@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useToast } from "./Toast";
+import { useToast } from "@/components/Toast";
 
 interface UseApiOptions {
   onSuccess?: (data: any) => void;

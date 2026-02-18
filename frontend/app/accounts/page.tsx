@@ -1,9 +1,7 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
-
 import { useTranslations } from "@/lib/i18n";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -45,7 +43,7 @@ const platforms: Record<Platform, PlatformConfig> = {
   },
 };
 
-export default function AccountsPage() {
+function AccountsContent() {
   const t = useTranslations();
   const searchParams = useSearchParams();
   const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -160,5 +158,13 @@ export default function AccountsPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function AccountsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><p className="text-muted">Loading...</p></div>}>
+      <AccountsContent />
+    </Suspense>
   );
 }
